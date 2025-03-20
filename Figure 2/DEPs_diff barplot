@@ -1,0 +1,44 @@
+Tissue	DEPs_Type	DEPs_Number
+Thymus	Up-regulated	461
+Thymus	Down-regulated	2329
+Bladder	Up-regulated	1111
+Bladder	Down-regulated	1166
+Beige fat	Up-regulated	809
+Beige fat	Down-regulated	923
+WAT	Up-regulated	553
+WAT	Down-regulated	1096
+Spinal cord	Up-regulated	444
+Spinal cord	Down-regulated	1062
+colon	Up-regulated	812
+colon	Down-regulated	618
+Eye	Up-regulated	419
+Eye	Down-regulated	560
+Bone	Up-regulated	530
+Bone	Down-regulated	421
+Skin	Up-regulated	278
+Skin	Down-regulated	591
+Spleen	Up-regulated	373
+Spleen	Down-regulated	461
+Small intestine	Up-regulated	252
+Small intestine	Down-regulated	456
+Liver	Up-regulated	465
+Liver	Down-regulated	222
+Cerebellum	Up-regulated	380
+Cerebellum	Down-regulated	291
+BAT	Up-regulated	321
+BAT	Down-regulated	322
+Testis	Up-regulated	277
+Testis	Down-regulated	239
+Kidney	Up-regulated	324
+Kidney	Down-regulated	183
+Muscle	Up-regulated	198
+Muscle	Down-regulated	271
+Lung	Up-regulated	193
+Lung	Down-regulated	181
+Brain	Up-regulated	189
+Brain	Down-regulated	180
+Heart	Up-regulated	160
+Heart	Down-regulated	118
+Pancrea	Up-regulated	178
+Pancrea	Down-regulated	100
+
