@@ -1,0 +1,99 @@
+---
+title: "Figure 3 Significant correlation and tight inflammatory signaling linkage between plasma and organ proteins."
+author: "Feng Zhang"
+date: "2025/3/18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Clean workspace
+rm(list=ls()) 
+```
+
+### a. Volcano plots for DEPs in the young versus aged plasma. 
+
+```{r volcano, echo=TRUE}
+
+# Advanced volcano Plots was performed using the OmicStudio tools at https://www.omicstudio.cn.
+# Plotting: ggplot2 package, version 3.3.3
+
+```
+
+### b-c. GO enrichment analysis for DEPs and Protein-protein interaction of complement and coagulation cascade process in the young versus aged plasma.
+
+```{r enrichment, echo=TRUE}
+
+## Gene Ontology (GO) process and pathway enrichment analysis of aging DEGs were performed by metascape (https://metascape.org/gp/index.html). Kappa-test score were calculated between each two representative terms selected from the metascape results (P value ≤ 0.05) and set as similarity score between terms. 
+
+my_palette <- colorRampPalette(c(alpha("#9E4058", 0.6),"#9E4058FF"), alpha=TRUE)(n=128)
+my_palette <- colorRampPalette(c(alpha("#513965FF", 0.6),alpha("#513965FF", 0.9)), alpha=TRUE)(n=128)
+
+ggplot() +
+  geom_bar(data = dt,aes(x = LogP, y = Description, fill = LogP),width= 0.52,stat= 'identity') +
+  scale_fill_gradientn('-log10(Pvalue)', colors=my_palette) + 
+  scale_x_continuous(expand = c(0,0)) +
+  geom_text(data = dt,aes(x = 0.1,y= Description,label= Description),size= 6,hjust= 0) +
+  geom_text(data = dt,aes(x = 0.1, y = Description, label = geneID, color = LogP),size= 6,fontface= 'italic',hjust= 0,vjust= 2.5) +
+  scale_color_gradientn('-log10(Pvalue)', colors=my_palette) + 
+  labs(x = '-Log10P',y= '', title= 'Age-related plasma proteins') + 
+  theme_classic()+ 
+  theme(axis.text.y = element_blank(),
+        plot.title = element_text(size = 16, face = 'bold'),
+        axis.title = element_text(size = 13),
+        axis.text = element_text(size = 13),
+        axis.ticks.y = element_blank())
+
+```
+
+
+### f. Heatmap showing pivotal correlation between plasma protein expression and corresponding organ-derived protein expression
+
+```{r Heatmap, echo=TRUE}
+
+for (i in 1:nrow(input1)){
+  input1.value <- input1[i,-1] %>% as.numeric()
+  input2.value <- input2[i,-1] %>% as.numeric() 
+  cor.value[i] <- cor.test(input1.value,input2.value)$estimate
+  p.value[i] <- cor.test(input1.value,input2.value)$p.value} 
+cor_result <- data.frame(group=input1$group,cor=cor.value,p.value=p.value)
+
+input1_long <- input1 %>% pivot_longer(-"group",names_to="Time",values_to="input1") 
+input2_long <- input2 %>% pivot_longer(-"group",names_to="Time",values_to="input2") 
+data <- inner_join(input1_long,input2_long)
+common_groups <- intersect(data$group, cor_result$group) 
+data <- data[data$group %in% common_groups, ]
+cor.value <- cor.test(data$input1,data$input2)$estimate 
+p.value <- cor.test(data$input1,data$input2)$p.value
+
+```
+
+### g. GO enrichment of plasma-tissue pairwise correlated proteins in plasma and various tissues.
+
+```{r pairwise, echo=TRUE}
+
+my_palette <- colorRampPalette(c("#DFDFDF","#9E4058FF"))(n=128)
+my_palette <- colorRampPalette(c("#DFDFDF","#513965FF"))(n=128)
+ggplot(data, aes(x = factor(GeneList, levels = c("Plasma","BAT","Beige fat","Bladder","Bone","Brain","Cerebellum","Colon","Eye","Heart","Kidney","Liver","Lung","Muscle","Pancrea","Skin","Small intestine","Spinal cord","Spleen","Testis","Thymus","WAT")), 
+y = factor(Description,levels=c("amino acid metabolic process","extracellular matrix organization","carboxylic acid biosynthetic process","humoral immune response","innate immune response")))) +  
+  geom_point(aes(size=-P,color=Enrichment)) +
+  scale_color_gradientn('Enrichment',colors=my_palette)+ 
+  labs(x=(""),y=(""))+ theme_bw() +
+  theme(legend.position="right",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.text.x = element_text(angle = 45, size = 9, hjust = 1, vjust = 1, color = "black"),
+        axis.text.y = element_text(size = 10, hjust = 1, color = "black"))
+
+```
+
+### i. Aging-related expression changes of markers of endothelial and platelet activation, erythrolysis and innate immunity modulation in liver, thymus, brain and lung.
+
+```{r changes, echo=TRUE}
+
+# Advanced Heatmap Plots was performed using the OmicStudio tools at https://www.omicstudio.cn.
+# Clustering Calculation (hclust): stats package
+# Plotting: pheatmap package, version 1.0.12
+
+```
+
