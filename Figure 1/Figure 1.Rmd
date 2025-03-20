@@ -1,0 +1,113 @@
+---
+title: "Figure 1 Characterization of age-related cross-tissue proteome and metabolome in mammals."
+author: "Feng Zhang"
+date: "2025/3/18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Clean workspace
+rm(list=ls()) 
+```
+
+### b-c. Principal component analyses (PCA) plot showing proteomic and metabolomic clustering based on tissue or age
+
+```{r pca, echo=TRUE}
+
+# Perform PCA with scaling
+pca_result <- prcomp(df, scale. = TRUE)
+pca_scores <- as.data.frame(pca_result$x)
+
+# Calculate the proportion of variance explained by each principal component
+explained_var <- pca_result$sdev^2 / sum(pca_result$sdev^2)
+
+# Add grouping variable 
+pca_scores$group <- factor(c(rep("Group1", n1), rep("Group2", n2)))  
+
+# Create PCA plot
+pca_plot <- ggplot(pca_scores, aes(x = PC1, y = PC2, color = group)) +
+  geom_point(size = 3) +  # Scatter plot of PCA scores
+  stat_ellipse(type = "norm", level = 0.95) +  # Add 95% confidence ellipses
+  xlab(paste0("PC1 (", round(explained_var[1] * 100, 2), "%)")) +  # Label x-axis with explained variance
+  ylab(paste0("PC2 (", round(explained_var[2] * 100, 2), "%)")) +  # Label y-axis with explained variance
+  theme_minimal() +  # Use a minimal theme
+  ggtitle("PCA Plot with 95% Confidence Ellipses")  # Add a title
+print(pca_plot)
+
+```
+
+### d-e. Relative ratios of the number of detected, differential and detected/differential proteins or metabolites across tissues.
+
+```{r radar, echo=TRUE}
+
+library(ggradar)
+library(cols4all)
+library(ggplot2)
+
+mycol<-c("#513965FF","#9E4058FF","#BCBD30")
+
+ggradar(dt,
+        grid.min = 0, grid.mid = 0.3, grid.max = 1.1,  
+        gridline.min.colour = "black", gridline.mid.colour = "black", gridline.max.colour = "black",  
+        base.size = 1, axis.label.size = 4, grid.label.size = 6, 
+        values.radar = c("", "30%", ""),  
+        group.colours = mycol,
+        group.point.size = 3, 
+        group.line.width = 1, 
+        background.circle.transparency = 0,
+        legend.position = 'right',
+        legend.text.size = 8,
+        fill = TRUE,
+        fill.alpha = 0.1)
+
+```
+
+
+### f-g left. Scatterplots of the normalized enrichment scores (NES) for features from proteomic and metabolomic pathway enrichment analyses in the thymus or pancreas
+
+```{r NES, echo=TRUE}
+
+library(tidyverse)
+library(ggplot2)
+
+ggplot(data) +
+  geom_vline(xintercept = 0, linewidth=1,linetype = "dashed", color = "#DFDFDF") + # 添加垂直虚线
+  geom_hline(yintercept = 0, linewidth=1,linetype = "dashed", color = "#DFDFDF") + # 添加水平虚线
+  geom_point(aes(input1,input2,color=group),size=7) +
+  geom_smooth(aes(input1,input2),span = 2, method='lm', color = "#513965FF") +
+  scale_color_manual(values = "#AFAFAF")+
+  xlab("NES(Proteomics)") + 
+  ylab("NES(Metabolics)") +  
+  theme_bw() + 
+  theme(panel.grid = element_blank()) + #去除网格线
+  theme(legend.position = c(-1.15, 0.2))
+ggsave("NES consistency.pdf", width = 5, height = 5)
+
+```
+
+### f-g right. Significant pathway terms enriched in both proteome and metabolome for young or aged thymus or pancreas
+
+```{r Pathway, echo=TRUE}
+
+library(ggstatsplot)
+library(data.table)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+pc <- ggplot(data,aes(NES_Pro,forcats::fct_reorder(Pro,NES_Pro))) +
+  geom_point(aes(NES_Pro,col=NES_Pro),size=5) +
+  geom_point(aes(NES_Met,col=NES_Met),size=5,shape=17) +
+  scale_colour_gradientn(colours=c("#513965FF","#EAEBEDFF","#9E4058FF")) +
+  scale_size_continuous(range =c(2,8))  +
+  scale_y_discrete(guide = guide_axis(position = "right")) +
+  theme_bw()+
+  theme(axis.text = element_text(size = 10, colour = "black"))+
+  theme(axis.title.x = element_text(size = 14, colour = "black"))+
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 1))+ 
+  labs(x = "NES(Thymus/Pancreas)", y =NULL)
+ggsave(pc, file="Pathway consistency.pdf",height=5,width = 8.3)
+
+```
+
+
