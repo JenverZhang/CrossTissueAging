@@ -1,0 +1,231 @@
+---
+title: "Figure 2 Characterized age-dependent proteomic shifts across multiple tissues."
+author: "Feng Zhang"
+date: "2025/3/18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Clean workspace
+rm(list=ls()) 
+```
+
+### a. Bar plots showing the number (top) and ratio (bottom) of up-regulated/down-regulated differentially expressed proteins (DEPs) across 21 tissues.
+
+```{r barplot, echo=TRUE}
+
+data1 <- data %>% mutate(Tissue = reorder(Tissue, -DEPs_Numberr))
+
+pC1 <- ggplot(data = data1, aes(x = Tissue, y = DEPs_Numberr, fill = DEPs_Type)) +
+  geom_bar(stat = "identity", width=0.8, aes(group=DEPs_Type), position="stack")+
+  scale_fill_manual(values = c(alpha("#E06C5F",0.85), alpha("#6EBBAC",0.7)))+ 
+  theme_bw()+
+  theme(panel.grid = element_blank()) +
+  labs(x = "", y = "DEGs DEPs_Numberr")+
+  theme(axis.text = element_text(size = 10, colour = "black"))+
+  theme(axis.title.y = element_text(size = 10, colour = "black"))+
+  theme(axis.line.y.left = element_line(colour = "black"))+
+  theme(axis.line.x.bottom = element_line(colour = "black"))+
+  theme(panel.border = element_blank()) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+
+pC2 <- ggplot(data = data1, aes(x = Tissue, y = DEPs_Numberr, fill = DEPs_Type)) +
+  geom_bar(stat = "identity", width=0.8,aes(group=DEPs_Type),position="fill")+
+  scale_fill_manual(values = c(alpha("#E06C5F",0.85), alpha("#6EBBAC",0.7)))+ 
+  theme_bw()+
+  theme(panel.grid =element_blank()) +
+  labs(x="",y="DEGs ratio")+
+  theme(axis.text = element_text(size=10, colour = "black"))+
+  theme(axis.line.y.left = element_line(colour = "black"))+
+  theme(axis.line.x.bottom = element_line(colour = "black"))+
+  theme(axis.title.y = element_text(size=10, colour = "black"))+
+  theme(panel.border = element_blank()) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) 
+
+pC <- pC1 + pC2 + plot_layout(ncol = 1, widths = c(2,1),guides = 'collect')
+
+```
+
+### b. Network plots indicating the enriched gene ontology terms/pathways of up-regulated and down-regulated DEPs.
+
+```{r GO, echo=TRUE}
+
+## Gene Ontology (GO) process and pathway enrichment analysis of aging DEGs were performed by metascape (https://metascape.org/gp/index.html). Kappa-test score were calculated between each two representative terms selected from the metascape results (P value ≤ 0.05) and set as similarity score between terms. 
+
+## Cytoscape (version 3.9.1) was used for visualization of representative GO terms, terms were set as nodes and similarity scores that more than 0.3 were set as edges.
+
+```
+
+### c. Radial plots showing high frequency up-regulated and down-regulated DEPs shared by at least eight tissue types.
+
+```{r radial plot, echo=TRUE}
+
+library(tidyverse)
+library(patchwork)
+library(dplyr)
+
+data <- data %>% mutate(Tissue = reorder(individual, -DEPs_number))
+label_data <- data 
+angle <-  90 - 360 * (label_data$id-0.5) / 86 # upregulated: the letter must have the angle of the center of the bars.
+angle <-  90 - 360 * (label_data$id-0.5) / 27 # downregulated: the letter must have the angle of the center of the bars.
+label_data$hjust<-ifelse(angle < -90, 1, 0) # If on the left part of the plot, labels have currently an angle < -90
+label_data$angle<-ifelse(angle < -90, angle+180, angle) # flip angle BY to make them readable
+
+ggplot(data, aes(x = reorder(individual, -DEPs_number), y = value, fill = DEPs_type)) +
+  geom_bar(stat="identity")+
+  scale_fill_manual(values = c("#78AECB","#639FB0","#98C7A5","#83C180","#B2A4A5","#EC8D63","#CFC397","#F6B279","#6197B4","#CEA168", "#A6A952", "#9ACC90","#E97679", "#DE4247", "#A38CBD","#795FA3", "#E0C880", "#C28B65","#A65A34","#DE4B3F", "#DD9E82"))+ 
+  ylim(-3,65) + 
+  theme_minimal() +    
+  theme(axis.text = element_blank(),
+        axis.title = element_blank(),
+        panel.grid = element_blank(),
+        plot.margin = unit(rep(-2,4), "cm")) +      
+  coord_polar(start = 0) +
+  geom_text(data=label_data, aes(x=id, y=number+0.5, label=individual, hjust=hjust), color="black", alpha=0.6, size=2.5, angle= label_data$angle, inherit.aes = FALSE ) 
+
+```
+
+### d. Significance was determined by two-sided Student’s t-tests for multiple proteins alteration between two groups, with up-regulated and down-regulated immunoglobulin labeled
+
+```{r volcano, echo=TRUE}
+
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+
+# Data Frame Convert and Select
+df1<- as_tibble(df1)
+df2<-filter(df1,(FC>=1.2|FC<=0.83)&PValue<0.05) 
+df1<-df1[,c(1,2,4,5)]
+df2<-df2[,c(1,2,4,5)]
+df2$Label <- case_when(df2$log2FC > 0 ~ "Up", df2$log2FC < 0 ~ "Down") 
+df3<-df2 %>% group_by(Groups,Label) %>% top_n(10,abs(log2FC))
+
+# Identify Unique Groups and Initialize Subset Data Frame
+groups<- unique(df2$Groups)
+df_sub<- data.frame()
+
+# Loop Through Groups to Mark Top Genes
+for(i in groups){
+  df2_sub<- filter(df2,Groups == i)
+  df3_sub<- filter(df3,Groups == i)
+  df2_sub$Top <-case_when(df2_sub$gene_id %in% df3_sub$gene_id ~ "Yes",
+                          !(df2_sub$gene_id %in% df3_sub$gene_id ) ~ "No")
+  df_sub<-rbind(df_sub,df2_sub) 
+}
+
+# Filter Non-Top Genes and Separate Up/Down Regulated Genes
+df4<- filter(df_sub,df_sub$Top=="No") 
+df5_up<- filter(df_sub,df_sub$Top=="Yes"& df_sub$Label=="Up")
+df5_down<- filter(df_sub,df_sub$Top=="Yes"& df_sub$Label=="Down")
+
+# Summarize Maximum and Minimum log2FC Values per Group
+df5_up<- as_tibble(df5_up)
+up<- df5_up %>% group_by(Groups) %>% summarise(max(log2FC))
+df5_down<- as_tibble(df5_down)
+down<- df5_down %>% group_by(Groups) %>% summarise(min(log2FC))
+df_col<- data.frame(up,down[2])
+max<- max(max(df_col$max.log2FC.),max(abs(df_col$min.log2FC.)))
+expan<- max/20
+
+
+# Read Phenotype Data and Assign Colors
+df_Ig <- read.table("gene_Ig.xls", header = T, sep = "\t") #phenotype data
+df_sub <- df_sub %>%
+  mutate(color = case_when(
+    gene_id %in% df_Ig$Ig ~ ifelse(Label == "Up", "#cc5756","#67add3"),
+    TRUE ~ alpha("#BFBFBF",0.6)))
+mycolor<- c("#78AECB", "#639FB0", "#98C7A5","#83C180", "#B2A4A5", "#EC8D63","#CFC397", "#F6B279", "#6197B4",
+            "#CEA168", "#A6A952", "#9ACC90","#E97679", "#DE4247", "#A38CBD","#795FA3", "#E0C880", "#C28B65",
+            "#A65A34", "#DE4B3F", "#DD9E82")
+dfbox<-data.frame(groups,y=0,label=c(1:length(groups)))
+
+# Create Polar Plot
+p<- ggplot()+
+  geom_col(data = df_col,
+           aes(x = Groups, y = max.log2FC.+expan),width =0.8,
+           fill= "grey90",alpha=0.4,show.legend = F)+
+  geom_col(data = df_col,aes(x = Groups, y = min.log2FC.-expan),width =0.8,
+           fill= "grey90",alpha=0.4,show.legend = F)+
+  geom_jitter(data = df_sub %>% filter(color == alpha("#BFBFBF",0.6)), 
+              aes(x = Groups, y = log2FC, color = color),
+              size = 0.1, width = 0.4, show.legend = F) +
+  geom_jitter(data = df_sub %>% filter(color != alpha("#BFBFBF",0.6)),  
+              aes(x = Groups, y = log2FC, color = color),
+              size = 0.3, width = 0.4, show.legend = F) +
+  scale_color_identity() + 
+  geom_bar(data=dfbox,
+           aes(x=groups,y=y+0.14,fill=groups),stat = "identity",width = 0.8)+
+  geom_bar(data=dfbox,
+           aes(x=groups,y=y-0.14,fill=groups),stat = "identity",width = 0.8)+
+  scale_fill_manual(name="Groups",values=alpha(mycolor,1))+
+  labs(x="",y="")+
+  theme_minimal()+
+  theme(axis.line.x = element_blank(),
+        axis.line.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank())+
+  scale_y_discrete(labels = c())+
+  coord_polar(start = 0) +
+  theme(legend.position = "none")
+
+
+```
+
+### e. Bubble plot showing the expression of accumulated immunoglobulin across tissues during aging.
+
+```{r bubble, echo=TRUE}
+
+my_palette <- colorRampPalette(c("#67add3","white","#cc5756"), alpha=TRUE)(n=128)
+p<-ggplot(m1, aes(x=gene_id,y=Groups)) +
+  geom_point(aes(size=-log10(PValue),color=log2FC)) +
+  scale_color_gradientn('log2(FC)',colors=my_palette,limits=c(-3,3.5)) + 
+  theme_bw() +
+  labs(x=("Immunoglobulins"),y=(""))+
+  theme(legend.position="right",
+    axis.ticks.y = element_blank(),
+    axis.text.x = element_text(angle = 45, size = 10, hjust = 1, vjust = 1, color = "black"),
+    axis.text.y = element_text(size = 9, color = "black"),
+    axis.title.x = element_text(size = 12, color = "black"),
+    panel.border = element_rect(size = 0.7, linetype = "solid", colour = "black"),
+    plot.margin = unit(c(0.2,1,1,1), "lines")) +
+  scale_x_discrete(labels = c("Jchain", "Ig-KV2A7", "Igkv6-17", "Igkv12-41", "Ig-KV5A5", "Igkv9-120", "Ig-KV5AB",
+                              "Ig-KV3A3", "Ig-KV3A8", "Ig-LV1A", "Ig-HVM02", "Igkc", "IgG2a", "IgG2b",
+                              "IgM", "IgA", "Ig-KV6AB", "Ig-HVM52", "Ighv1-72", "Ig-HVM51", "Fcgr2", "Ig-HVM57", "Irgm1")) + 
+  guides(size = guide_legend(override.aes = list(size = 6)))
+
+```
+
+### f. Heatmap of the four expression modules revealed by k-means clustering
+
+```{r heatmap, echo=TRUE}
+
+# Advanced Heatmap Plots was performed using the OmicStudio tools at https://www.omicstudio.cn.
+# Clustering Calculation (hclust): stats package
+# Plotting: pheatmap package, version 1.0.12
+
+```
+
+### g-h. Module-specific and -shared GO terms/pathways between Module 1 and 2 (G), as well as Module 3 and 4 (H)
+
+```{r module, echo=TRUE}
+
+## Gene Ontology (GO) process and pathway enrichment analysis of aging DEGs were performed by metascape (https://metascape.org/gp/index.html). Kappa-test score were calculated between each two representative terms selected from the metascape results (P value ≤ 0.05) and set as similarity score between terms. 
+
+ggplot(data_long, aes(x = Log_q_value, y = id, fill = Module)) +
+  geom_bar(stat = "identity", width = 0.7) + 
+  scale_fill_manual(values = colorSet) +
+  facet_grid(~Module, scales = "free", space = "free_y") +
+  theme_bw() +
+  xlab("-log10(qvalue)") +
+  ylab("") +
+  theme(legend.position = "none",
+    strip.text.x = element_text(colour = "black", angle = 360, size = 12, hjust = 0.5),
+    strip.background = element_rect(fill = "#67add3", color = "black"),  # For Module 1 & 2
+    strip.background = element_rect(fill = "#cc5756", color = "black"),  # For Module 3 & 4
+    axis.text.x = element_text(size = 10, colour = "black"),
+    axis.text.y = element_text(size = 10, colour = "black"),
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12))
+
+```
