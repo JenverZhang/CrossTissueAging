@@ -1,0 +1,11 @@
+Description	Cluster	Log10Pvalue	Protein Hits
+Complement and coagulation cascades	upregulated	6.54863985	Cfd, C2, C4b, C9, Serpind1, Tfpi, F12
+ECM-receptor interaction	upregulated	4.218923285	Comp, Itga2, Itgb1, Thbs4, Tnc
+Focal adhesion	upregulated	3.433232785	Comp, Itga2, Itgb1, Thbs4, Tnc, Rap1b
+PI3K-Akt signaling pathway	upregulated	2.801458372	Cdc37, Comp, Hsp90ab1, Itga2, Itgb1
+Platelet activation	upregulated	2.553804483	Itga2, Fermt3, Rap1b
+Tuberculosis	downregulated	2.870659692	Camp, Lbp, Mrc1
+Motor proteins	downregulated	2.764738546	Myl1, Mylpf, Tubb4b
+Toll-like receptor signaling pathway	downregulated	2.146094216	Lbp, Spp1
+Cytoskeleton in muscle cells	downregulated	1.498683076	Myl1, Mylpf
+Salmonella infection	downregulated	1.425931687	Mylpf, Tubb4b
