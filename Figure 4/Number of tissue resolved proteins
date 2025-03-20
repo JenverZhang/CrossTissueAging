@@ -1,0 +1,43 @@
+Tissue	Type	Number
+BAT	Organ-enriched	143
+BAT	Organ-specific	183
+Beige fat	Organ-enriched	31
+Beige fat	Organ-specific	11
+Bladder	Organ-enriched	45
+Bladder	Organ-specific	58
+Bone	Organ-enriched	76
+Bone	Organ-specific	48
+Brain	Organ-enriched	60
+Brain	Organ-specific	10
+Cerebellum	Organ-enriched	148
+Cerebellum	Organ-specific	68
+colon	Organ-enriched	23
+colon	Organ-specific	13
+Eye	Organ-enriched	94
+Eye	Organ-specific	174
+Heart	Organ-enriched	148
+Heart	Organ-specific	34
+Kidney	Organ-enriched	131
+Kidney	Organ-specific	116
+Liver	Organ-enriched	75
+Liver	Organ-specific	75
+Lung	Organ-enriched	80
+Lung	Organ-specific	18
+Muscle	Organ-enriched	104
+Muscle	Organ-specific	148
+Pancrea	Organ-enriched	149
+Pancrea	Organ-specific	26
+Skin	Organ-enriched	53
+Skin	Organ-specific	73
+Small intestine	Organ-enriched	39
+Small intestine	Organ-specific	23
+Spinal cord	Organ-enriched	162
+Spinal cord	Organ-specific	56
+Spleen	Organ-enriched	80
+Spleen	Organ-specific	33
+Testis	Organ-enriched	127
+Testis	Organ-specific	109
+Thymus	Organ-enriched	131
+Thymus	Organ-specific	64
+WAT	Organ-enriched	56
+WAT	Organ-specific	22
