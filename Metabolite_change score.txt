@@ -1,0 +1,45 @@
+Tissue	Number	Type
+BAT	67	upregulated
+Beige fat	106	upregulated
+Bladder	117	upregulated
+Bone	51	upregulated
+Brain	60	upregulated
+Cerebellum	138	upregulated
+Colon	97	upregulated
+Eye	145	upregulated
+Heart	94	upregulated
+Kidney	109	upregulated
+Liver	82	upregulated
+Lung	54	upregulated
+Muscle	82	upregulated
+Pancreas	39	upregulated
+Skin	83	upregulated
+Small intestine	79	upregulated
+Spinal cord	95	upregulated
+Spleen	69	upregulated
+Testis	102	upregulated
+Thymus	157	upregulated
+WAT	62	upregulated
+BAT	160	Downregulated
+Beige fat	223	Downregulated
+Bladder	125	Downregulated
+Bone	22	Downregulated
+Brain	55	Downregulated
+Cerebellum	117	Downregulated
+Colon	102	Downregulated
+Eye	131	Downregulated
+Heart	160	Downregulated
+Kidney	81	Downregulated
+Liver	110	Downregulated
+Lung	85	Downregulated
+Muscle	75	Downregulated
+Pancreas	54	Downregulated
+Skin	88	Downregulated
+Small intestine	56	Downregulated
+Spinal cord	183	Downregulated
+Spleen	86	Downregulated
+Testis	70	Downregulated
+Thymus	202	Downregulated
+WAT	93	Downregulated
+
+
