@@ -1,0 +1,104 @@
+---
+title: "Figure 5 Identification of aging-related metabolites varying in tissues."
+author: "Feng Zhang"
+date: "2025/3/18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Clean workspace
+rm(list=ls()) 
+```
+
+### a. Bar plots displaying the count of differential metabolites between the young and aged tissues.
+
+```{r barplot, echo=TRUE}
+
+library(ggplot2)
+
+ggplot(df,aes(Tissue,value,fill=group))+
+  geom_col(width = 0.8)+
+  coord_flip()+   
+  scale_fill_manual(values = col)+  
+  theme_bw()+  
+  theme(panel.grid = element_blank(),
+        axis.text.x = element_text(color = "black", size = 10),
+        axis.text.y = element_text(color = "black",size = 10),        
+        axis.title = element_text(color = "black",size = 12),        
+        legend.position = "top",
+        legend.title = element_blank(),        
+        legend.text = element_text(color = "black",size = 12))+  
+  labs(x=NULL,y="Aging-related metabolites")+  
+  scale_y_continuous(breaks = seq(-200, 200, 100))
+
+```
+
+### b. Aging-related change score of different metabolite classes in each tissue. 
+
+```{r score, echo=TRUE}
+
+library(tidyverse)
+library(ggplot2)
+library(grid)
+
+x <- max(data$input1)*(-1.15)
+y <- max(data$input2)
+subtype1.col <- c("#ffe7e1","#73828F","#2c415d","#A7BCBC","#8ba5ae","#fdb762","#a18499","#fdd0a6","#df9175","#b15928","#fff6f0")
+col_subt <- c("Alkaloids and derivatives" = subtype1.col[1],"Benzenoids" = subtype1.col[2],"Lipids and lipid-like molecules" = subtype1.col[3],"Nucleosides, nucleotides, and analogues" = subtype1.col[4],"Organic acids and derivatives" = subtype1.col[5],"Organic nitrogen compounds" = subtype1.col[6],"Organic oxygen compounds" = subtype1.col[7],"Organoheterocyclic compounds" = subtype1.col[8],"Organosulfur compounds" = subtype1.col[9],"Others" = subtype1.col[10],"Phenylpropanoids and polyketides" = subtype1.col[11])
+
+g_colors <- c("#513965FF",adjustcolor("#513965FF", alpha.f = 0.6),adjustcolor("#513965FF", alpha.f = 0.1))
+h_colors <- c(adjustcolor("#9E4058FF", alpha.f = 0.1),adjustcolor("#9E4058FF", alpha.f = 0.6), "#9E4058FF")
+g <- rasterGrob(matrix(g_colors, nrow = 1), width = unit(1, "npc"), height = unit(1, "npc"), interpolate = TRUE)
+h <- rasterGrob(matrix(h_colors, nrow = 1),width = unit(1, "npc"), height = unit(1, "npc"), interpolate = TRUE)
+ggplot(data) +
+  annotation_custom(g, xmin = -Inf, xmax = 0, ymin = -Inf, ymax = Inf) +
+  annotation_custom(h, xmin = 0, xmax = Inf, ymin = -Inf, ymax = Inf) +
+  geom_point(aes(input2, input1, color = group, size = abs(input2) * 2)) +
+  scale_color_manual(values = col_subt) +
+  xlab("Age-related Change Score") + 
+  ylab("Number of Age-related Metabolites") +  
+  theme_bw() + 
+  theme(panel.grid = element_blank())+
+  theme(legend.position = c(-1.15, 0.2))
+
+```
+
+### e. Inter-tissue correlation heatmaps displaying the metabolic coupling in the young (bottom left) and aged (top right) mice
+
+```{r volcano, echo=TRUE}
+
+# Advanced Heatmap Plots was performed using the OmicStudio tools at https://www.omicstudio.cn.
+# Clustering Calculation (hclust): stats package
+# Plotting: pheatmap package, version 1.0.12
+
+```
+
+### f. KEGG pathway enrichment analysis of aging-related metabolites in various tissues. 
+
+```{r volcano, echo=TRUE}
+
+library(data.table)
+library(reshape2)
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+
+m1 <- data1[data1[,3] %in% data2[1:3,], ] 
+m1 <- m1 %>% filter(Sig.Sign.P != "ns") %>% select(c(1, 3, 7, 8))  
+m1$log_pvalue <- ifelse(m1$P.value == 0, min(m1$P.value[m1$P.value > 0]), m1$P.value)
+p <-ggplot(m1, aes(x=Tissue,y=kegg_pathway_Name)) +
+  geom_point(aes(size=Rich.Factor,color=-log10(log_pvalue))) +
+  scale_color_gradientn('-log10(Pvalue)',colors=my_palette) + #
+  theme_bw() +labs(x=(""),y=(""))+
+  scale_y_discrete(position = "right")+
+  theme(legend.position="right",
+        panel.grid.major.x = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 10, color = "black"),
+        panel.border = element_rect(size = 0.7, linetype = "solid", colour = "black"),
+        plot.margin = unit(c(0.5,0.5,1,1), "lines"))
+p
+
+```
+
