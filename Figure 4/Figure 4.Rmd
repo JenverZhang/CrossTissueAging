@@ -1,0 +1,182 @@
+---
+title: "Figure 4 Organ-resolved proteomic change and disease-associated clues."
+author: "Feng Zhang"
+date: "2025/3/18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Clean workspace
+rm(list=ls()) 
+```
+
+### c. The top pathways enriched in organ-resolved proteins for each organ
+
+```{r network, echo=TRUE}
+
+## Pathway enrichment analysis of organ-resolved proteins were performed by metascape (https://metascape.org/gp/index.html). Kappa-test score were calculated between each two representative terms selected from the metascape results (P value ≤ 0.05) and set as similarity score between terms. 
+
+## Cytoscape (version 3.9.1) was used for visualization of representative pathway terms, terms were set as nodes and similarity scores that more than 0.3 were set as edges.
+
+```
+
+### e. The number of organ-resolved proteins that are shared by more than one organ
+
+```{r volcano, echo=TRUE}
+
+library(UpSetR)
+library(tidyr)
+library(ggplot2)
+
+p <-  upset(df2[-1],
+      sets= names(df2)[-1], 
+      nintersects=50, 
+      point.size=1.8, 
+      mb.ratio = c(0.55,0.45),
+      line.size = 1,
+      sets.bar.color = NA,
+      main.bar.col= "#3b3b3b",
+      matrix.color= "#3b3b3b",
+      text.scale = c(1, 1, 1, 1, 1, 1),
+      sets.x.label = "",
+      mainbar.y.label  = "Intersection size",
+      queries = list(
+        list(query = elements,params = list("Brain","Lung"),color = "#9E4058FF",active = TRUE),
+        list(query = elements,params = list("Heart","Pancrea"),color = "#9E4058FF",active = TRUE),
+        list(query = elements,params = list("Cerebellum","Spinal.cord"),color = "#9E4058FF",active = TRUE)))
+p
+
+
+```
+
+### h. Bubble plots displaying organ distributions of aging-upregulated or aging-downregulated organ-resolved proteins
+
+```{r volcano, echo=TRUE}
+
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+library(cowplot)
+
+xmin <- -0.2
+xmax <-  0.2
+x_axis_min <- -1.8
+x_axis_max <-  1.8
+y_axis_min <-  2.2
+y_axis_max <-  4.7
+xlab <- "log2FC (Proteome)"
+ylab <- "Tissue-specific score across tissues"
+x_tick_pos <- seq(x_axis_min, x_axis_max, 0.6)
+y_tick_pos <- seq(y_axis_min, y_axis_max, 0.5)
+
+data <- data %>% mutate(quadrant = case_when(
+  x <= xmin  ~ "Q1",
+  x >  xmin & x <= xmax ~ "Q2",
+  x >  xmax  ~ "Q3"))
+head(data)
+
+annotate_x <- c(rep(x_axis_max, 3), rep((x_axis_min+x_axis_max)/2, 3), rep(x_axis_min, 3))
+annotate_y <- rep(c(y_axis_max, (y_axis_min+y_axis_max)/2, y_axis_min), 3)
+annotate_text_color <- c(rep("black", 4), "white", rep("black", 4))
+
+ggplot(data) + 
+  geom_rect(aes(xmin=-1.8,xmax=-0.2,ymin=-Inf,ymax=Inf),fill="#FFD8DF",alpha=0.3)+
+  geom_rect(aes(xmin=0.2,xmax=1.8,ymin=-Inf,ymax=Inf),fill="#C7DFE8",alpha=0.3)+
+  geom_point(aes(x=x, y=y, color=group), size=1) +
+  coord_cartesian(xlim=c(x_axis_min, x_axis_max),ylim=c(y_axis_min, y_axis_max)) + 
+  facet_wrap( ~ group, nrow=3,  scales = "fixed")+
+  labs(x=xlab, y=ylab) + 
+  theme_bw() + theme(legend.position="none", panel.grid=element_blank()) + 
+  scale_colour_manual(values=c("#78AECB", "#639FB0", "#98C7A5","#83C180", "#B2A4A5", "#EC8D63","#CFC397", "#F6B279", "#6197B4","#CEA168", "#A6A952", "#9ACC90","#E97679", "#DE4247", "#A38CBD","#795FA3", "#E0C880", "#C28B65","#A65A34", "#DE4B3F", "#DD9E82")) + 
+  scale_x_continuous(breaks=x_tick_pos) +
+  scale_y_continuous(breaks=y_tick_pos)+ 
+  theme(title = element_text(size = 10,colour = 'black'),
+        axis.text.y = element_text(size = 12,colour = 'black'),
+        axis.text.x = element_text(size = 12,colour = 'black'),
+        axis.title.x = element_text(size = 13,colour = 'black'),
+        axis.title.y = element_text(size = 13,colour = 'black'))
+
+```
+
+### i. circular connection diagram displaying organ distributions of aging-upregulated or aging-downregulated organ-resolved proteins
+
+```{r circular plot, echo=TRUE}
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+Glycan$angle <- ifelse(Glycan$Node < 1660,
+                       75-(150/1658*(Glycan$Node-1)),
+                       75-(150/1658*(Glycan$Node-1))-30)
+Glycan$G.x <- cos(Glycan$angle*pi/180.0)*(nrow(protein)/2)
+Glycan$G.y <- sin(Glycan$angle*pi/180.0)*(nrow(protein)/2)
+head(Glycan)
+
+# Outlier
+curve <- Glycan[,3, drop=F]
+curve$x.start <- Glycan$G.x*1.1
+curve$x.end <- Glycan$G.x*1.15
+curve$y.start <- Glycan$G.y*1.1
+curve$y.end <- Glycan$G.y*1.15
+curve <- curve[-c(276:337,358:419,451:512,565:626,655:716,832:892,917:978,1155:1216,1337:1398,1584:1645,1734:1795,
+                  1852:1913,2084:2145,2259:2320,2375:2436,2478:2539,2665:2726,2798:2859,3014:3075,3199:3260),] 
+head(curve)
+
+# Central
+protein.pos <- protein[,1:2]
+head(protein.pos)
+protein.pos <- arrange(protein.pos, Count)
+protein.pos$P.x <- 0
+protein.pos$P.y <- seq(floor(nrow(protein)/2),-floor(nrow(protein)/2))
+protein.pos$cluster <- ifelse(protein.pos$Count < 4, protein.pos$Count, ifelse(protein.pos$Count < 6, "4", "5"))
+head(protein.pos)
+
+# Connect line
+connect <- protein[,c(1,3)]
+head(connect)
+Gly.name <- strsplit(as.character(connect[,2]),split=";")
+connect.count <- sapply(Gly.name,length)
+connection <- data.frame(Protein=rep(connect$Protein,connect.count),Glycan=unlist(Gly.name))
+
+#merge
+all<-read.table("all.xls",sep = "\t",check.names = F,stringsAsFactors = F,header = T)
+head(all)
+all1 <- merge(all,protein.pos,by="Protein")
+all1$seg.clu <- ifelse(all1$Glycan=="HexNAc(2)Hex(6)Phospho(1)","zz",all1$Gly.clu)
+head(all1)
+
+cols <- c("#78AECB", "#639FB0", "#98C7A5","#83C180", "#B2A4A5", "#EC8D63","#CFC397", "#F6B279", "#6197B4",
+          "#CEA168", "#A6A952", "#9ACC90","#E97679", "#DE4247", "#A38CBD","#795FA3", "#E0C880", "#C28B65",
+          "#A65A34", "#DE4B3F", "#DD9E82")
+fills <- c("#FFD8DF","#AFAFAF","#C7DFE8")
+p <- ggplot(all1) +   
+  geom_point(aes(G.x,G.y,color=Gly.clu))+ 
+  geom_segment(aes(x=G.x,y=G.y,xend=P.x,yend=P.y,color=seg.clu),alpha=0.1)+ 
+  geom_rect(aes(xmin=-1,xmax=1,ymin=P.y,ymax=P.y+1,fill=cluster))+
+  geom_segment(data=curve,aes(x=x.start,xend=x.end,y=y.start,yend=y.end,color=Gly.clu),size=5)+
+  theme_minimal() +theme(legend.position = "none",axis.text = element_blank(),
+                         axis.title = element_blank(),panel.grid = element_blank())+
+  scale_color_manual(values=cols) +
+  scale_fill_manual(values=fills)
+
+```
+
+### k. Disease ontology enrichment results in aging-related tissue-resolved proteins of each tissue.
+
+```{r DOSE, echo=TRUE}
+
+library(DOSE)
+library(org.Mm.eg.db)
+library(clusterProfiler)
+
+uniprot_ids <- c()
+data <- bitr(uniprot_ids, fromType = "UNIPROT", toType = "ENTREZID", OrgDb = org.Hs.eg.db) 
+do_enrich <- enrichDO(gene = data$ENTREZID,ont = "DO",pAdjustMethod = "BH",qvalueCutoff = 0.05,readable = TRUE)
+head(do_enrich)
+
+## Cytoscape (version 3.9.1) was used for visualization of specific terms
+
+```
+
+
