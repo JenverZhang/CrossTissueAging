@@ -1,0 +1,79 @@
+---
+title: "Figure 6 Remarkable changes of the gut microbiota symbiotic networks and functions in the aged mice."
+author: "Feng Zhang"
+date: "2025/3/18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Clean workspace
+rm(list=ls()) 
+```
+
+### a. Principal coordinate analysis (PCoA) with Bray-Curtis dissimilarity based on the species relative abundances in the young and aged groups
+
+```{r PCoA, echo=TRUE}
+
+library(vegan)
+library(ade4)
+
+bray_curtis_dist <- vegdist(data, method = "bray")
+pcoa_result <- dudi.pco(bray_curtis_dist, scannf = FALSE, nf = 2)
+pcoa_scores <- pcoa_result$li
+plot(pcoa_scores$A1, pcoa_scores$A2, xlab = "PCoA1", ylab = "PCoA2")
+
+```
+
+### b. Component proportions of the microbes at the phylum level in the young and aged groups or samples
+
+```{r barplot, echo=TRUE}
+
+library(ggplot2)
+library(ggalluvial)
+library(reshape)
+library(dplyr)
+
+ggplot(data_melt,aes(x=variable,y=value,fill=id,stratum=id,alluvium=id))+
+  geom_col(width = 0.8,color=NA)+
+  scale_fill_manual(values=c("#248888","#EA7070","#A6CEE3","#6FAACF","#3887BC","#3F8EAA","#7BB899","#ADDC86","#79C360","#45A939","#669E48","#B89B74""#F9908F","#EF5C5C","#E52829","#EA4A34","#F58E56","#FDB762","#FE9D35","#FE8308","#ED8F47","#D7A49E","#BBA0CD","#9471B4","#6D419C","#A18499","#DDD397","#F0E084","#D09C56","#B15928"))+ 
+  xlab("")+ylab(expression("Percentage (%)"))+
+  theme_classic()+
+  theme(legend.position = 'none',
+        panel.border = element_blank(),
+        axis.ticks = element_line(size=0.2,color="black"),
+        axis.title = element_text(size = 12,color="black"),
+        axis.text.y = element_text(size = 10,color="black"),
+        axis.text.x = element_text(size=10,angle = 45, hjust = 1, vjust = 1,color="black"))
+
+```
+
+### c. statistical differences supervised by Linear discriminant analysis effect size (LEfSe) method
+
+```{r LEfSe, echo=TRUE}
+
+# LEfSe was performed using the OmicStudio tools at https://www.omicstudio.cn/tool/ with ggplot2 (3.5.1), microeco (1.6.0), OmicStudioClassic (1.56.0), and OmicStudioKits (3.26.0)
+
+```
+
+### f. Procrustes analysis to assess the correlation between microbial community and function, based on PCoA results of species abundances and KEGG orthologs in young and aged groups
+
+```{r Procrustes, echo=TRUE}
+
+library(vegan)
+set.seed(123)
+
+pca_X <- rda(X, scale = TRUE)
+pca_Y <- rda(Y, scale = TRUE)
+scores_X <- scores(pca_X, display = "sites", choices = 1:2)
+scores_Y <- scores(pca_Y, display = "sites", choices = 1:2)
+procrustes_result <- procrustes(scores_X, scores_Y, symmetric = TRUE)
+summary(procrustes_result)
+
+plot(procrustes_result, main = "", xlab = "PC1", ylab = "PC2")
+arrows(procrustes_result$X[, 1], procrustes_result$X[, 2], procrustes_result$Yrot[, 1], procrustes_result$Yrot[, 2], length = 0.1)
+protest_result <- protest(scores_X, scores_Y, permutations = 999)
+summary(protest_result)
+m2_statistic <- protest_result$ss
+p_value <- protest_result$signif 
+
+```
