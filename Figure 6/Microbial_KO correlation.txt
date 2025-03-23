@@ -1,0 +1,93 @@
+Species	KEGG ontology	combined_score
+Helicobacter_ganmani	3-hydroxyacyl-CoA dehydrogenase, FadB	0.598721366
+Escherichia_sp._E2661	3-hydroxyacyl-CoA dehydrogenase, FadB	-0.611990181
+Escherichia_sp._4_1_40B	3-hydroxyacyl-CoA dehydrogenase, FadB	-0.622384566
+Escherichia_unclassified	3-hydroxyacyl-CoA dehydrogenase, FadB	-0.645355442
+Helicobacter_sp._MIT_03-1616	3-hydroxyacyl-CoA dehydrogenase, FadB	0.666365673
+Helicobacter_rodentium	3-hydroxyacyl-CoA dehydrogenase, FadB	0.730088105
+Helicobacter_typhlonius	3-hydroxyacyl-CoA dehydrogenase, FadB	0.739686449
+Helicobacter_apodemus	3-hydroxyacyl-CoA dehydrogenase, FadB	0.756509601
+Helicobacter_hepaticus	3-hydroxyacyl-CoA dehydrogenase, FadB	0.777538208
+Escherichia_unclassified	3-hydroxybutyryl-CoA dehydrogenase	-0.589473684
+Escherichia_sp._E2661	3-hydroxybutyryl-CoA dehydrogenase	-0.592077701
+Escherichia_sp._4_1_40B	3-hydroxybutyryl-CoA dehydrogenase	-0.628627309
+Helicobacter_hepaticus	3-hydroxybutyryl-CoA dehydrogenase	0.681075467
+Helicobacter_apodemus	3-hydroxybutyryl-CoA dehydrogenase	0.70612086
+Helicobacter_rodentium	3-hydroxybutyryl-CoA dehydrogenase	0.710781724
+Helicobacter_typhlonius	3-hydroxybutyryl-CoA dehydrogenase	0.72206612
+Helicobacter_sp._MIT_03-1616	3-hydroxybutyryl-CoA dehydrogenase	0.747291823
+Helicobacter_ganmani	3-hydroxybutyryl-CoA dehydrogenase	0.769924812
+Escherichia_sp._E2661	acyl-CoA thioester hydrolase YciA	-0.216267012
+Escherichia_sp._4_1_40B	acyl-CoA thioester hydrolase YciA	-0.233720366
+Escherichia_unclassified	acyl-CoA thioester hydrolase YciA	-0.267870655
+Helicobacter_sp._MIT_03-1616	acyl-CoA thioester hydrolase YciA	0.342053956
+Helicobacter_typhlonius	acyl-CoA thioester hydrolase YciA	0.38575995
+Helicobacter_ganmani	acyl-CoA thioester hydrolase YciA	0.387509515
+Helicobacter_hepaticus	acyl-CoA thioester hydrolase YciA	0.43940346
+Helicobacter_rodentium	acyl-CoA thioester hydrolase YciA	0.456331073
+Helicobacter_apodemus	acyl-CoA thioester hydrolase YciA	0.457885864
+Escherichia_sp._E2661	arylesterase	-0.460050726
+Escherichia_sp._4_1_40B	arylesterase	-0.467707799
+Helicobacter_ganmani	arylesterase	0.536607594
+Helicobacter_sp._MIT_03-1616	arylesterase	0.564147345
+Escherichia_unclassified	arylesterase	-0.590947604
+Helicobacter_rodentium	arylesterase	0.631985381
+Helicobacter_typhlonius	arylesterase	0.642504803
+Helicobacter_apodemus	arylesterase	0.677210738
+Helicobacter_hepaticus	arylesterase	0.683650431
+Helicobacter_typhlonius	glutathione peroxidase	0.354993819
+Helicobacter_apodemus	glutathione peroxidase	0.382478515
+Helicobacter_ganmani	glutathione peroxidase	0.420617124
+Helicobacter_hepaticus	glutathione peroxidase	0.427570333
+Helicobacter_rodentium	glutathione peroxidase	0.429122236
+Helicobacter_sp._MIT_03-1616	glutathione peroxidase	0.437673585
+Escherichia_sp._E2661	glutathione peroxidase	-0.43816179
+Escherichia_unclassified	glutathione peroxidase	-0.474793212
+Escherichia_sp._4_1_40B	glutathione peroxidase	-0.52768187
+Escherichia_sp._E2661	glutathione peroxidase family protein	0.439438945
+Escherichia_unclassified	glutathione peroxidase family protein	0.523308271
+Escherichia_sp._4_1_40B	glutathione peroxidase family protein	0.536428637
+Helicobacter_ganmani	glutathione peroxidase family protein	-0.553383459
+Helicobacter_apodemus	glutathione peroxidase family protein	-0.577170296
+Helicobacter_typhlonius	glutathione peroxidase family protein	-0.589634779
+Helicobacter_rodentium	glutathione peroxidase family protein	-0.617564449
+Helicobacter_hepaticus	glutathione peroxidase family protein	-0.640084814
+Helicobacter_sp._MIT_03-1616	glutathione peroxidase family protein	-0.649413684
+Escherichia_unclassified	putative 3-hydroxybutyryl-CoA dehydrogenase	-0.396992481
+Escherichia_sp._4_1_40B	putative 3-hydroxybutyryl-CoA dehydrogenase	-0.470899002
+Helicobacter_hepaticus	putative 3-hydroxybutyryl-CoA dehydrogenase	0.485581583
+Helicobacter_rodentium	putative 3-hydroxybutyryl-CoA dehydrogenase	0.542990628
+Helicobacter_apodemus	putative 3-hydroxybutyryl-CoA dehydrogenase	0.561634083
+Helicobacter_typhlonius	putative 3-hydroxybutyryl-CoA dehydrogenase	0.569139453
+Escherichia_sp._E2661	putative 3-hydroxybutyryl-CoA dehydrogenase	-0.57440374
+Helicobacter_ganmani	putative 3-hydroxybutyryl-CoA dehydrogenase	0.592481203
+Helicobacter_sp._MIT_03-1616	putative 3-hydroxybutyryl-CoA dehydrogenase	0.598920994
+Escherichia_sp._E2661	putative acyl-CoA thioesterase i protein	-0.220171674
+Escherichia_sp._4_1_40B	putative acyl-CoA thioesterase i protein	-0.252792251
+Escherichia_unclassified	putative acyl-CoA thioesterase i protein	-0.342232158
+Helicobacter_sp._MIT_03-1616	putative acyl-CoA thioesterase i protein	0.440729923
+Helicobacter_ganmani	putative acyl-CoA thioesterase i protein	0.444259116
+Helicobacter_rodentium	putative acyl-CoA thioesterase i protein	0.554854903
+Helicobacter_typhlonius	putative acyl-CoA thioesterase i protein	0.574418908
+Helicobacter_apodemus	putative acyl-CoA thioesterase i protein	0.587224897
+Helicobacter_hepaticus	putative acyl-CoA thioesterase i protein	0.624112039
+Escherichia_sp._4_1_40B	putative methyltransferase	-0.444991938
+Escherichia_unclassified	putative methyltransferase	-0.482706767
+Helicobacter_hepaticus	putative methyltransferase	0.520265982
+Escherichia_sp._E2661	putative methyltransferase	-0.528612113
+Helicobacter_sp._MIT_03-1616	putative methyltransferase	0.595813751
+Helicobacter_rodentium	putative methyltransferase	0.608242721
+Helicobacter_apodemus	putative methyltransferase	0.612903585
+Helicobacter_typhlonius	putative methyltransferase	0.618012924
+Helicobacter_ganmani	putative methyltransferase	0.693233083
+Escherichia_sp._4_1_40B	Squalene/phytoene synthase	0.541762445
+Escherichia_sp._E2661	Squalene/phytoene synthase	0.620195366
+Helicobacter_ganmani	Squalene/phytoene synthase	-0.661654135
+Escherichia_unclassified	Squalene/phytoene synthase	0.679699248
+Helicobacter_sp._MIT_03-1616	Squalene/phytoene synthase	-0.677378867
+Helicobacter_rodentium	Squalene/phytoene synthase	-0.701459996
+Helicobacter_hepaticus	Squalene/phytoene synthase	-0.712606739
+Helicobacter_apodemus	Squalene/phytoene synthase	-0.754283119
+Helicobacter_typhlonius	Squalene/phytoene synthase	-0.764633337
+
+
