@@ -1,0 +1,220 @@
+---
+title: "Figure 7 Integrative omics-resolved alterations to multi-organ aging."
+author: "Feng Zhang"
+date: "2025/3/18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Clean workspace
+rm(list=ls()) 
+```
+
+### Significant enrichments for relevant categories of KEGG metabolic pathways from features that were dysregulated in various organs detected by proteome, metabolome and metagenome
+
+```{r bubble, echo=TRUE}
+
+subtype1.col <- c("#6B0A0A","#1C999E","#a18499")
+col_subt <- c("METAB" = subtype1.col[1],"PROT" = subtype1.col[2],"QMG" = subtype1.col[3])
+m <- data1[data1[,3] %in% data2[,1], ] %>% filter(Sig.Sign.P != "ns")
+m$kegg_pathway_Name <- factor(m$kegg_pathway_Name, levels = c(
+  "Pyrimidine metabolism","Purine metabolism","D-Amino acid metabolism","Glutathione metabolism","beta-Alanine metabolism","Steroid biosynthesis","Fatty acid elongation","Biosynthesis of unsaturated fatty acids","Sphingolipid metabolism","Fatty acid degradation",
+  "alpha-Linolenic acid metabolism","Glycerolipid metabolism","Linoleic acid metabolism","Arachidonic acid metabolism","Glycerophospholipid metabolism","Sulfur metabolism","Oxidative phosphorylation","Citrate cycle (TCA cycle)","Pentose and glucuronate interconversions",
+  "Amino sugar and nucleotide sugar metabolism","Pentose phosphate pathway","Glycolysis / Gluconeogenesis","Fructose and mannose metabolism","Propanoate metabolism","Butanoate metabolism","Pyruvate metabolism","Glyoxylate and dicarboxylate metabolism","Tyrosine metabolism",
+  "Cysteine and methionine metabolism","Tryptophan metabolism","Lysine degradation","Valine, leucine and isoleucine degradation","Arginine and proline metabolism","Alanine, aspartate and glutamate metabolism","Arginine biosynthesis","Histidine metabolism","Glycine, serine and threonine metabolism"))
+
+ggplot(m, aes(x=Tissue,y=kegg_pathway_Name)) +
+  geom_point(aes(color=Omics)) +
+  geom_vline(xintercept=c(21.5,42.5),size=0.3,linetype="solid")+
+  geom_hline(yintercept=c(2.5,5.5,15.5,17.5,27.5,37.5),size=0.3,linetype="solid")+
+  scale_color_manual(values = col_subt) +  
+  scale_y_discrete(position = "right")+theme_bw()+labs(x=(""),y=(""))+
+  theme(legend.position="none",
+        panel.grid.major.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 8, color = "black"))
+
+```
+
+### WGCNA modules construction 
+
+```{r WGCNA, echo=TRUE}
+
+library(WGCNA)
+
+# Check for bad samples or genes
+gsg = goodSamplesGenes(datExpr1, verbose = 3);
+gsg$allOK
+
+# Check for outlier samples
+sampleTree = hclust(dist(datExpr1), method = "average")
+par(cex = 0.7);
+par(mar = c(0,4,2,0))
+plot(sampleTree, main = "Sample clustering to detect outliers", sub="", xlab="", cex.lab = 1.5,
+     cex.axis = 1.5, cex.main = 2)
+datExpr = as.data.frame(datExpr1)
+nGenes = ncol(datExpr)
+nSamples = nrow(datExpr)
+
+# Find gene modules
+powers = c(c(1:10), seq(from = 12, to=20, by=2))
+sft = pickSoftThreshold(datExpr, powerVector = powers, verbose = 5)
+pdf("1Threshold.pdf",width = 10, height = 5)
+par(mfrow = c(1,2))
+cex1 = 0.9
+plot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
+     xlab="Soft Threshold (power)",ylab="Scale Free Topology Model Fit, signed R^2",type="n",
+     main = paste("Scale independence")) +
+  text(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],labels=powers,cex=cex1,col="red")+
+  abline(h=0.90,col="red")
+plot(sft$fitIndices[,1], sft$fitIndices[,5],
+     xlab="Soft Threshold (power)",ylab="Mean Connectivity", type="n",
+     main = paste("Mean connectivity")) +
+  text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
+dev.off() 
+
+# Construct network and identify gene modules
+net = blockwiseModules(datExpr, power = 12,
+                       TOMType = "unsigned", minModuleSize = 30,
+                       reassignThreshold = 0, mergeCutHeight = 0.25,
+                       numericLabels = TRUE, pamRespectsDendro = FALSE,
+                       saveTOMs = TRUE,
+                       saveTOMFileBase = "MyTOM",
+                       verbose = 3)
+table(net$colors)
+mergedColors = labels2colors(net$colors)
+pdf("2module.pdf",width = 10, height = 5)
+plotDendroAndColors(net$dendrograms[[1]], mergedColors[net$blockGenes[[1]]], "Module colors",
+                    dendroLabels = FALSE, hang = 0.03,
+                    addGuide = TRUE, guideHang = 0.05)
+dev.off()
+
+## Module reproducibility
+library(caret)
+inTraining <- createDataPartition(datExpr$P26039, p = 0.75, list = FALSE)
+train<- datExpr[inTraining,]
+test<-datExpr[-inTraining,]
+setLabels = c("Train", "Test");
+multiExpr = list(Train = list(data = train), Test = list(data = test));
+moduleColors = labels2colors(net$colors)
+multiColor = list(Train = moduleColors);
+mp = modulePreservation(multiExpr, multiColor,
+                        referenceNetworks = 1,
+                        nPermutations = 20,
+                        randomSeed = 1,
+                        quickCor = 0,
+                        verbose = 3)
+ref = 1
+test = 2
+statsObs = cbind(mp$quality$observed[[ref]][[test]][, -1], mp$preservation$observed[[ref]][[test]][, -1])
+statsZ = cbind(mp$quality$Z[[ref]][[test]][, -1], mp$preservation$Z[[ref]][[test]][, -1]);
+print(cbind(statsObs[, c("medianRank.pres", "medianRank.qual")],
+            signif(statsZ[, c("Zsummary.pres", "Zsummary.qual")], 2)) )
+modColors = rownames(mp$preservation$observed[[ref]][[test]])
+moduleSizes = mp$preservation$Z[[ref]][[test]][, 1]
+plotMods = !(modColors %in% c("grey", "gold"))  # Exclude modules with Z < 2
+text = modColors[plotMods]; # Text labels for points
+plotData = cbind(mp$preservation$observed[[ref]][[test]][, 2], mp$preservation$Z[[ref]][[test]][, 2])
+mains = c("Preservation Median rank", "Preservation Zsummary");
+sizeGrWindow(10, 5);
+pdf("3preservation.pdf",width = 20, height = 10)
+par(mfrow = c(1,2))
+par(mar = c(4.5,4.5,2.5,1))
+for (p in 1:2){
+  min = min(plotData[, p], na.rm = TRUE);
+  max = max(plotData[, p], na.rm = TRUE);
+  if (p==2){
+    if (min > -max/10) min = -max/10
+    ylim = c(min - 0.1 * (max-min), max + 0.1 * (max-min))
+  } else
+    ylim = c(min - 0.1 * (max-min), max + 0.1 * (max-min))
+  plot(moduleSizes[plotMods], plotData[plotMods, p], col = 1, bg = modColors[plotMods], pch = 21,
+       main = mains[p],
+       cex = 2.4,
+       ylab = mains[p], xlab = "Module size", log = "x",
+       ylim = ylim,
+       xlim = c(10, 2000), cex.lab = 1.2, cex.axis = 1.2, cex.main =1.4)
+  labelPoints(moduleSizes[plotMods], plotData[plotMods, p], text, cex = 1, offs = 0.08);
+  if (p==2){
+    abline(h=0)
+    abline(h=2, col = "blue", lty = 2)
+    abline(h=10, col = "darkgreen", lty = 2)
+  }
+}
+dev.off()
+
+## Output gene modules to files  
+color<-unique(moduleColors)
+for (i  in 1:length(color)) {
+  y=t(assign(paste(color[i],"expr",sep = "."),datExpr[moduleColors==color[i]]))
+  write.csv(y,paste(color[i],"csv",sep = "."),quote = F)
+}
+
+## Correlation between traits and modules
+moduleLabelsAutomatic = net$colors
+moduleColorsAutomatic = labels2colors(moduleLabelsAutomatic)
+moduleColorsWW = moduleColorsAutomatic
+MEs0 = moduleEigengenes(datExpr, moduleColorsWW)$eigengenes
+MEsWW = orderMEs(MEs0)
+modTraitCor = cor(MEsWW, samples, use = "p")
+colnames(MEsWW)
+modlues=MEsWW
+modTraitP = corPvalueStudent(modTraitCor, nSamples)
+textMatrix = paste(signif(modTraitCor, 2), "\n(", signif(modTraitP, 1), ")", sep = "")
+dim(textMatrix) = dim(modTraitCor)
+pdf("4Module-trait_age and tissue.pdf",width = 20, height = 7.5)
+labeledHeatmap(Matrix = modTraitCor, xLabels = colnames(samples), yLabels = names(MEsWW), cex.lab = 0.5,  yColorWidth=0.01, 
+               xColorWidth = 0.03,
+               ySymbols = colnames(modlues), colorLabels = FALSE, colors = blueWhiteRed(50), 
+               textMatrix = textMatrix, setStdMargins = FALSE, cex.text = 0.5, zlim = c(-1,1)
+               , main = paste("Module-trait relationships"))
+dev.off()
+
+```
+
+### WGCNA MEs tissue comparison
+
+```{r MEs, echo=TRUE}
+
+calculate_stats <- function(data) {
+  mean_Old <- mean(data$Expression[data$Age == "Aged"], na.rm = TRUE)
+  mean_Young <- mean(data$Expression[data$Age == "Young"], na.rm = TRUE)
+  t_test_result <- t.test(Expression ~ Age, data = data) 
+  p_value <- t_test_result$p.value
+  FC <- mean_Aged / mean_Young  
+  return(data.frame(mean_Old = mean_Old, mean_Young = mean_Young, FC = FC, p_value = p_value))}
+results_list <- list()
+for (i in 1:14) {
+  data_name <- get(paste0("data_long_MM", i))  
+  result <- data_name %>%
+  group_by(Tissue) %>%
+  do(calculate_stats(.))
+  results_list[[i]] <- result
+}
+names(results_list) <- paste0("MM", 1:14)
+print(results_list[[1]])
+wb <- createWorkbook()
+for (i in 1:length(results_list)) {
+  sheet_name <- paste0("MM", i)
+  addWorksheet(wb, sheet_name)  
+  writeData(wb, sheet_name, results_list[[i]])  
+}
+
+for (i in 1:24) {
+  data_name <- get(paste0("data_long_PM", i))  
+  result <- data_name %>%
+  group_by(Tissue) %>%
+  do(calculate_stats(.))
+  results_list[[i]] <- result
+}
+names(results_list) <- paste0("PM", 1:24)
+print(results_list[[1]])
+wb <- createWorkbook()
+for (i in 1:length(results_list)) {
+  sheet_name <- paste0("PM", i)
+  addWorksheet(wb, sheet_name)  
+  writeData(wb, sheet_name, results_list[[i]])  
+}
+
+```
